@@ -54,7 +54,7 @@ class EdifyGenerator(edify_generator.EdifyGenerator):
       self.script.append('assert(run_program("/tmp/updater.sh") == 0);')
 
     def RunBackup(self, command):
-      edify_generator.EdifyGenerator.RunBackup(self, command)
+        edify_generator.EdifyGenerator.RunBackup(self, command)
 
     def RunConfig(self, command):
       edify_generator.EdifyGenerator.RunConfig(self, command)
