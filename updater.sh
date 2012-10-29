@@ -262,3 +262,4 @@ elif /tmp/busybox test -e /dev/block/mtdblock0 ; then
 
     exit 0
 fi
+
