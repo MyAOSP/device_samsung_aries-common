@@ -7,6 +7,8 @@ import android.preference.DialogPreference;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -14,7 +16,7 @@ import android.widget.TextView;
  * Special preference type that allows configuration of both the in call volume and
  * in call mic gain.
  */
-public class VolumeBoostPreference extends DialogPreference {
+public class VolumeBoostPreference extends DialogPreference implements OnClickListener {
 
     private static final int[] SEEKBAR_ID = new int[] {
         R.id.boost_rcv_seekbar,
@@ -63,7 +65,7 @@ public class VolumeBoostPreference extends DialogPreference {
     private static final int BOOST_DEFAULT_VALUE = 2;
     private static final int BOOST_MAX_VALUE = 3;
 
-    private static final int[] MIC_DEFAULT_VALUE = new int[] { 19, 31, 29, 18 };
+    private static final int MIC_DEFAULT_VALUE = 18;
     private static final int MIC_MAX_VALUE = 31;
 
     // Track instances to know when to restore original value
@@ -91,8 +93,15 @@ public class VolumeBoostPreference extends DialogPreference {
         for (int i = 0; i < MIC_SEEKBAR_ID.length; i++) {
             SeekBar seekBar = (SeekBar) view.findViewById(MIC_SEEKBAR_ID[i]);
             TextView valueDisplay = (TextView) view.findViewById(MIC_VALUE_DISPLAY_ID[i]);
-            mSeekBars[SEEKBAR_ID.length + i] = new MicSeekBar(seekBar, valueDisplay, MIC_FILE_PATH[i], i);
+            mSeekBars[SEEKBAR_ID.length + i] = new MicSeekBar(seekBar, valueDisplay, MIC_FILE_PATH[i]);
         }
+
+        SetupButtonClickListener(view);
+    }
+
+    private void SetupButtonClickListener(View view) {
+        Button mResetButton = (Button)view.findViewById(R.id.volume_reset);
+        mResetButton.setOnClickListener(this);
     }
 
     @Override
@@ -128,7 +137,7 @@ public class VolumeBoostPreference extends DialogPreference {
         }
 
         for (int i = 0; i < MIC_FILE_PATH.length; i++) {
-            int value = sharedPrefs.getInt(MIC_FILE_PATH[i], MIC_DEFAULT_VALUE[i]);
+            int value = sharedPrefs.getInt(MIC_FILE_PATH[i], MIC_DEFAULT_VALUE);
             Utils.writeValue(MIC_FILE_PATH[i], String.valueOf(value));
         }
     }
@@ -211,18 +220,24 @@ public class VolumeBoostPreference extends DialogPreference {
             mValueDisplay.setText(String.valueOf(progress));
         }
 
+        public void resetDefault(String path, int value) {
+            mSeekBar.setProgress(value);
+            updateValue(value);
+            Utils.writeValue(path, String.valueOf(value));
+        }
+
     }
 
     class MicSeekBar extends VolumeSeekBar {
 
-        public MicSeekBar(SeekBar seekBar, TextView valueDisplay, String filePath, int defaultValue) {
+        public MicSeekBar(SeekBar seekBar, TextView valueDisplay, String filePath) {
             mSeekBar = seekBar;
             mValueDisplay = valueDisplay;
             mFilePath = filePath;
 
             // Read original value
             SharedPreferences sharedPreferences = getSharedPreferences();
-            mOriginal = sharedPreferences.getInt(mFilePath, MIC_DEFAULT_VALUE[defaultValue]);
+            mOriginal = sharedPreferences.getInt(mFilePath, MIC_DEFAULT_VALUE);
 
             seekBar.setMax(MIC_MAX_VALUE);
             reset();
@@ -242,4 +257,18 @@ public class VolumeBoostPreference extends DialogPreference {
         }
 
     }
+
+    public void onClick(View v) {
+        switch(v.getId()) {
+            case R.id.volume_reset:
+                for (int i = 0; i < BOOST_FILE_PATH.length; i++) {
+                    mSeekBars[i].resetDefault(BOOST_FILE_PATH[i], BOOST_DEFAULT_VALUE);
+                }
+                for (int i = 0; i < MIC_FILE_PATH.length; i++) {
+                    mSeekBars[BOOST_FILE_PATH.length + i].resetDefault(MIC_FILE_PATH[i], MIC_DEFAULT_VALUE);
+                }
+                break;
+        }
+    }
+
 }

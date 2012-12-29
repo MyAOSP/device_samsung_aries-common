@@ -44,8 +44,7 @@ DEVICE_PACKAGE_OVERLAYS := device/samsung/aries-common/overlay
 PRODUCT_COPY_FILES := \
 	device/samsung/aries-common/vold.fstab:system/etc/vold.fstab \
 	device/samsung/aries-common/egl.cfg:system/lib/egl/egl.cfg \
-	device/samsung/aries-common/mxt224_ts_input.idc:system/usr/idc/mxt224_ts_input.idc \
-	device/samsung/aries-common/main.conf:system/etc/bluetooth/main.conf
+	device/samsung/aries-common/mxt224_ts_input.idc:system/usr/idc/mxt224_ts_input.idc
 
 # Init files
 PRODUCT_COPY_FILES += \
@@ -107,8 +106,8 @@ PRODUCT_PACKAGES += \
 	libs3cjpeg
 
 PRODUCT_COPY_FILES += \
-	device/samsung/aries-common/libaudio/audio_policy.conf:system/etc/audio_policy.conf \
-    vendor/baked/prebuilt/common/etc/apns-conf.xml:system/etc/apns-conf.xml
+	device/samsung/aries-common/libaudio/audio_policy.conf:system/etc/audio_policy.conf
+
 # Libs
 PRODUCT_PACKAGES += \
 	libstagefrighthw
@@ -153,7 +152,7 @@ PRODUCT_PROPERTY_OVERRIDES := \
 # be reachable from resources or other mechanisms.
 PRODUCT_PROPERTY_OVERRIDES += \
        wifi.interface=wlan0 \
-       ro.telephony.ril_class=SamsungRIL \
+       ro.telephony.ril_class=SamsungExynos3RIL \
        ro.telephony.ril.v3=icccardstatus,datacall,signalstrength,facilitylock \
        mobiledata.interfaces=pdp0,eth0,gprs,ppp0 \
        ro.vold.switchablepair=/mnt/emmc,/mnt/sdcard \
